@@ -22,7 +22,7 @@ export default function HomeScreen({ navigation, route }: HomeScreenProps) {
             Welcome to Trivia Gods!
           </Text>
           <TouchableOpacity 
-            onPress={() => navigation.push(Screens.PracticeScreen)}
+            onPress={() => navigation.navigate(Screens.PracticeScreen, { questionIndex: 0 })}
             style={tailwind("px-4 py-2 max-w-xs bg-indigo-600 rounded-md")}
           >
             <Text style={tailwind("text-white font-medium")}>

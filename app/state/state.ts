@@ -1,7 +1,24 @@
+import { IQuestion } from "../types"
+import { derived } from "overmind";
+
 type State = {
-  counter: number
+  isLoading: boolean,
+  isError: boolean,
+  error: Error | null,
+  questions: IQuestion[],
+  currentQuestion: IQuestion | undefined,
+  currentIndex: number,
+  sessionToken: string,
+  isSession: boolean,
 };
 
 export const state: State = {
-  counter: 0,
+  isLoading: false,
+  isError: false,
+  error: null,
+  questions: [],
+  currentQuestion: derived((state: State) => state.questions[state.currentIndex] ),
+  currentIndex: 0,
+  sessionToken: "",
+  isSession: false,
 };

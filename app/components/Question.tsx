@@ -1,3 +1,4 @@
+import he from "he";
 import React from "react";
 import { IQuestion } from "../types"
 import { Text, StyleSheet, View } from "react-native";
@@ -10,16 +11,16 @@ interface QuestionProps {
 
 export default function Question({ question }: QuestionProps) {
   return (
-    <View style={styles.questionContainer}>
+    <View>
       <Text style={styles.questionPrompt}>
-        {question.question}
+        {he.decode(question.question)}
       </Text>
 
       <View style={styles.answerItemGrid}>
         {Array.from([question.correct_answer, ...question.incorrect_answers]).map((answer: string, index: number) => {
           return (
             <AnswerItem index={index} key={`question-${index}`}>
-              {answer}
+              {he.decode(answer)}
             </AnswerItem>
           );          
         })}
