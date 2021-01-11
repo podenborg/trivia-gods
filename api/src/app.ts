@@ -6,6 +6,7 @@ import * as dotenv from "dotenv";
 
 import indexRouter from "./routes/index";
 import usersRouter from "./routes/users";
+import sessionsRouter from "./routes/sessions";
 import questionsRouter from "./routes/questions";
 
 import { notFoundHandler, errorHandler } from "./middleware"
@@ -24,6 +25,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/questions', questionsRouter);
+app.use('/review-session', sessionsRouter);
 
 app.use(errorHandler);
 app.use(notFoundHandler);
