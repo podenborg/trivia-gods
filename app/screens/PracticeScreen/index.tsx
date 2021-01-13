@@ -7,7 +7,7 @@ import { RootParamList } from "../../types";
 import { StatusBar } from "expo-status-bar";
 import { useState, useActions} from "../../state";
 import { StackScreenProps } from "@react-navigation/stack";
-import { StyleSheet, TouchableOpacity, Text, View } from "react-native";
+import { StyleSheet, TouchableOpacity, ActivityIndicator, Text, View } from "react-native";
 
 import Question from "../../components/Question"
 
@@ -49,7 +49,9 @@ export default function HomeScreen({ navigation, route }: PracticeScreenProps) {
   }, []);  
 
   if (isLoading || !currentQuestion) {
-    return <Text>Loading...</Text>
+    return <View>
+      <ActivityIndicator size="large" />
+    </View>
   }
   if (isError) {
     return <Text>Error: {error?.message}</Text>

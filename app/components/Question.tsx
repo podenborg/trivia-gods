@@ -17,6 +17,7 @@ export default function Question({ question }: QuestionProps) {
       </Text>
 
       <View style={styles.answerItemGrid}>
+        {/* TO DO: Render with FlatList component */}
         {Array.from([question.correct_answer, ...question.incorrect_answers]).map((answer: string, index: number) => {
           return (
             <AnswerItem index={index} key={`question-${index}`}>
