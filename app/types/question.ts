@@ -6,5 +6,6 @@ export type IQuestion = {
   question: string,
   correct_answer: string,
   incorrect_answers: string[],
-  user_answer: string,  
+  user_answer: string|undefined,
+  was_answered: boolean,
 }

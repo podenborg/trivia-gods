@@ -1,44 +1,41 @@
 import he from "he";
 import React from "react";
-import { IQuestion } from "../types"
-import { Text, StyleSheet, View } from "react-native";
+import { IQuestion } from "../types";
+import { PracticeScreenRouteProp } from "../types";
+import { useRoute } from "@react-navigation/native";
+import { Text, FlatList, View } from "react-native";
 
 import AnswerItem from "./AnswerItem"
+import tailwind from "tailwind-rn";
 
 interface QuestionProps {
   question: IQuestion
 }
 
 export default function Question({ question }: QuestionProps) {
+  const route = useRoute<PracticeScreenRouteProp>();
+
+  const renderItem = ({ item }: {item: string}) => (
+    <AnswerItem answer={he.decode(item)} />     
+  );
+
   return (
     <View>
-      <Text style={styles.questionPrompt}>
+      <Text style={tailwind("mt-3 text-gray-500 text-base font-medium")}>
+        Question {route?.params?.questionIndex + 1}/15
+      </Text>
+      <Text style={tailwind("mt-2 text-lg text-gray-800 font-medium")}>
         {he.decode(question.question)}
       </Text>
 
-      <View style={styles.answerItemGrid}>
-        {/* TO DO: Render with FlatList component */}
-        {Array.from([question.correct_answer, ...question.incorrect_answers]).map((answer: string, index: number) => {
-          return (
-            <AnswerItem index={index} key={`question-${index}`}>
-              {he.decode(answer)}
-            </AnswerItem>
-          );          
-        })}
+      <View style={tailwind("w-full mt-3")}>
+        <FlatList
+          renderItem={renderItem}
+          style={tailwind("w-full")}
+          keyExtractor={(_, index) => `answer-${index}`}
+          data={[ question.correct_answer, ...question.incorrect_answers]}
+        />       
       </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({  
-  questionPrompt: {
-    color: "#222",
-    fontSize: 24,
-  },
-  answerItemGrid: {       
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",    
-    marginTop: 48,
-  }, 
-});

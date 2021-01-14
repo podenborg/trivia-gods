@@ -1,8 +1,9 @@
+import { Screens } from "../enums";
+import { RouteProp } from "@react-navigation/native";
+
 export type RootParamList = {
   HomeScreen: undefined,
-  PracticeScreen: {
-    questionIndex: number
-  },
-  // Screen2: { paramA: string }
-  // Screen3: { paramB: string; paramC: number }
-}
+  PracticeScreen: { questionIndex: number },
+};
+
+export type PracticeScreenRouteProp = RouteProp<RootParamList, Screens.PracticeScreen>

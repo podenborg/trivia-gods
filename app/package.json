@@ -15,6 +15,7 @@
     "expo": "~40.0.0",
     "expo-status-bar": "~1.0.3",
     "he": "^1.2.0",
+    "nanoid": "^3.1.20",
     "overmind": "^26.0.0",
     "overmind-react": "^27.0.0",
     "react": "16.13.1",

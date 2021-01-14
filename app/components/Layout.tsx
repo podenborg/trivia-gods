@@ -11,7 +11,7 @@ interface LayoutProps {
 export default function Layout({ children }: LayoutProps) {
   return (
     <View style={tailwind("h-full w-full bg-gray-100 flex items-center")}>
-      <View style={tailwind("w-full max-w-sm px-4")}>
+      <View style={tailwind("w-full max-w-sm")}>
         {children}
       </View>      
     </View>
