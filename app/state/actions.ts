@@ -8,10 +8,25 @@ export const setSessionToken: Action<string> = ({ state }, value) => {
 
 export const initializeSession: AsyncAction = async ({ state, actions, effects }) => {
   try {
+    let sessionId, sessionToken;
     state.questions.isLoading = true;
-    const { questions, token } = await effects.api.fetchSessionData();
+
+    const session = await effects.storage.retrieveData("session");
+    if (session !== null) {
+      sessionId = session.sessionId;
+      sessionToken = session.sessionToken;
+    }
+    
+    const { questions, token } = await effects.api.fetchSessionData(sessionToken);    
     actions.setQuestions(questions);
-    if (token) actions.setSessionToken(token);
+    actions.setSessionToken(token);
+
+    state.session.id = sessionId ? sessionId : nanoid(10);
+
+    await effects.storage.storeData("session", { 
+      sessionId: state.session.id, 
+      sessionToken: token,
+    });
   } catch (error) {
     state.questions.error = error;
     state.questions.isError = true;
@@ -23,8 +38,28 @@ export const initializeSession: AsyncAction = async ({ state, actions, effects }
 export const saveSessionData: AsyncAction = async ({ state, effects }) => {
   try {
     state.session.isLoading = true;
-    const result = await effects.api.postSessionData(state.questions.dataList);
+    const result = await effects.api.postSessionData(state.session.id, state.questions.dataList);
     console.log("result", result);
+  } catch (error) {
+    state.session.error = error;
+    state.session.isError = true;
+  } finally {
+    state.session.isLoading = false;
+  }
+};
+
+export const deleteSession: AsyncAction = async ({ state, effects }) => {
+  try {
+    if (!state.session.id) {
+      console.log("No session to delete.");
+      return;
+    }
+    const oldSessionId = state.session.id;
+    state.session.isLoading = true;
+    state.session.id = "";
+    state.session.token = "";
+    await effects.storage.deleteData("session");
+    console.log(`Successfully deleted session ${oldSessionId}.`);
   } catch (error) {
     state.session.error = error;
     state.session.isError = true;

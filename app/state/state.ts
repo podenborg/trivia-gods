@@ -14,6 +14,7 @@ type QuestionState = {
 };
 
 type SessionState = {
+  id: string,
   token: string,
   isLoading: boolean,
   isError: boolean,
@@ -43,6 +44,7 @@ export const state: State = {
     }, 0)),
   },
   session: {
+    id: "",
     token: "",
     isLoading: false,
     isError: false,

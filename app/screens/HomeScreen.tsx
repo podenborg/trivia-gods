@@ -1,8 +1,9 @@
 import React from "react";
 import tailwind from "tailwind-rn";
 import { Screens } from "../enums";
-import { RootParamList } from "../../types";
+import { RootParamList } from "../types";
 import { StatusBar } from "expo-status-bar";
+import { useState, useActions } from "../state";
 import { StackScreenProps } from "@react-navigation/stack";
 import { TouchableOpacity, Text, View, ImageBackground, StyleSheet } from "react-native";
 
@@ -12,6 +13,9 @@ import Button from "../components/Button";
 type HomeScreenProps = StackScreenProps<RootParamList, Screens.HomeScreen>
 
 export default function HomeScreen({ navigation, route }: HomeScreenProps) {
+  const { session: { id: sessionId }} = useState();
+  const { deleteSession } = useActions();
+
   return (
     <Layout>      
       <View style={tailwind("w-full px-4")}>        
@@ -27,6 +31,12 @@ export default function HomeScreen({ navigation, route }: HomeScreenProps) {
 
           <Button onPress={() => navigation.navigate(Screens.PracticeScreen, { questionIndex: 0 })}>
             Practice Mode
+          </Button>
+        </View>
+
+        <View style={tailwind("mt-8 px-6")}>
+          <Button color="yellow" onPress={async () => {await deleteSession();}}>
+            Reset Session
           </Button>
         </View>
 
