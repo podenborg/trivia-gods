@@ -3,13 +3,14 @@ import React from "react";
 import tailwind from "tailwind-rn";
 import { Screens } from "../enums";
 import { RootParamList } from "../types";
+import { Text, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useState, useActions } from "../state";
 import { StackScreenProps } from "@react-navigation/stack";
-import { TouchableOpacity, ActivityIndicator, Text, View } from "react-native";
 
 import Layout from "../components/Layout";
 import Button from "../components/Button";
+import Loader from "../components/Loader";
 import Question from "../components/Question";
 
 export type PracticeScreenProps = StackScreenProps<RootParamList, Screens.PracticeScreen>
@@ -23,6 +24,12 @@ export default function HomeScreen({ navigation, route }: PracticeScreenProps) {
   console.log("dataList", dataList);
   console.log("currentQuestion", currentQuestion);
 
+  const handleNavigate = () => {
+    return questionIndex < dataList.length - 1
+      ? navigation.navigate(Screens.PracticeScreen, { questionIndex: questionIndex + 1 })
+      : navigation.navigate(Screens.SummaryScreen);
+  };
+
   React.useEffect(() => {
       const initialize = async () => await initializeSession();
       initialize();
@@ -33,9 +40,7 @@ export default function HomeScreen({ navigation, route }: PracticeScreenProps) {
   }, [questionIndex]);
 
   if (isLoading || !currentQuestion) {
-    return <View>
-      <ActivityIndicator size="large" />
-    </View>
+    return <Loader />
   }
   if (isError) {
     return <Text>Error: {error?.message}</Text>
@@ -57,9 +62,7 @@ export default function HomeScreen({ navigation, route }: PracticeScreenProps) {
               }
             </Text>
 
-            <Button onPress={() => navigation.navigate(Screens.PracticeScreen, {
-              questionIndex: questionIndex < dataList.length - 1 ? questionIndex + 1 : dataList.length = 1
-            })}>
+            <Button onPress={handleNavigate}>
               Next
             </Button>          
           </View>

@@ -2,12 +2,8 @@ import { IQuestion } from "../types";
 import { nanoid } from "nanoid/non-secure";
 import { Action, AsyncAction } from "overmind";
 
-export const setIsSession: Action<boolean> = ({ state }, value) => {
-  state.isSession = value;
-};
-
 export const setSessionToken: Action<string> = ({ state }, value) => {
-  state.sessionToken = value;
+  state.session.token = value;
 };
 
 export const initializeSession: AsyncAction = async ({ state, actions, effects }) => {
@@ -16,12 +12,24 @@ export const initializeSession: AsyncAction = async ({ state, actions, effects }
     const { questions, token } = await effects.api.fetchSessionData();
     actions.setQuestions(questions);
     if (token) actions.setSessionToken(token);
-    state.isSession = true;
   } catch (error) {
     state.questions.error = error;
     state.questions.isError = true;
   } finally {
     state.questions.isLoading = false;
+  }
+};
+
+export const saveSessionData: AsyncAction = async ({ state, effects }) => {
+  try {
+    state.session.isLoading = true;
+    const result = await effects.api.postSessionData(state.questions.dataList);
+    console.log("result", result);
+  } catch (error) {
+    state.session.error = error;
+    state.session.isError = true;
+  } finally {
+    state.session.isLoading = false;
   }
 };
 

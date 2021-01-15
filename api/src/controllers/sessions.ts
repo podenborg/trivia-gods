@@ -1,9 +1,9 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import sessionsService from "../services/sessions";
 
 const { createSession, resumeSession } = sessionsService;
 
-const getSession = async (req: Request, res: Response, next: NextFunction) => {    
+const getSession = async (req: Request, res: Response) => {    
   const amount = req.query.amount as string;
   const token = req.query.token as string;
   try {

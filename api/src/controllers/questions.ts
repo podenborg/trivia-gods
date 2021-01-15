@@ -7,7 +7,8 @@ const saveQuestions = async (req: Request, res: Response, next: NextFunction) =>
   // const amount = req.query.amount as string;
   // const token = req.query.token as string;
   try {
-    console.log('req.body', req.body);
+    const questions = req.body.questions as any[];
+    console.log("QUESTIONS FROM APP:", questions);
     // if (!token) {
     //   const [questions, token] = await createSession(amount);      
     //   res.status(200).json({ questions, token });         
@@ -15,7 +16,7 @@ const saveQuestions = async (req: Request, res: Response, next: NextFunction) =>
     //   const questions = await resumeSession(amount, token);
     //   res.status(200).json({ questions, token });
     // }    
-    res.send("it worked!");
+    res.send("I got your questions!");
   } catch (error) {
     res.status(400).send(error.message);
   }
