@@ -1,5 +1,5 @@
 import axios from "axios";
-import { db } from "../db";
+// import { db } from "../db";
 
 const createSession = async (amount: string) => {
   try {
