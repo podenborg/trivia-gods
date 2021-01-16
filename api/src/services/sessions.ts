@@ -1,22 +1,22 @@
 import axios from "axios";
-// import { db } from "../db";
+import { questionsDb } from "../db";
 
-const createSession = async (amount: string) => {
+export const createSession = async (amount: string) => {
   try {
     const token = await retrieveSessionToken();    
     const questions = await fetchQuestions(amount, token);
-    return [questions, token];
+    return { questions: questions, token: token };
   } catch (error) {
     throw error;
   }  
 };
 
-const resumeSession = async (amount: string, token: string) => {
-  try {
-    // const incorrectQuestions = await db.fetchIncorrectQuestions();
-    // const questionsToFetch = 15 - incorrectQuestions.length;
-    // const questions = await fetchQuestions(questionsToFetch);
-    // return [...incorrectQuestions, questions];
+export const resumeSession = async (amount: string, token: string) => {
+  try {    
+    // const incorrectQuestions = await questionsDb.retrieveIncorrectQuestions();  
+    // const newAmount: string = (Number(amount) - incorrectQuestions.rowCount).toString();
+    // const newQuestions = await fetchQuestions(newAmount, token);
+    // const questions = [ ...incorrectQuestions.rows, ...newQuestions ];
     const questions = await fetchQuestions(amount, token);
     return questions;
   } catch (error) {
@@ -24,7 +24,7 @@ const resumeSession = async (amount: string, token: string) => {
   }
 };
 
-const retrieveSessionToken = async () => {
+export const retrieveSessionToken = async () => {
   try {
     const res = await axios(`${process.env.OPEN_TRIVIA_URL}/api_token.php?command=request`);
     const { token } = res.data;
@@ -34,17 +34,12 @@ const retrieveSessionToken = async () => {
   }
 };
 
-const fetchQuestions = async (amount: string, token: string) => {
-  try {
-    const res = await axios(`${process.env.OPEN_TRIVIA_URL}/api.php?amount=${amount}&category=20&token=${token}`);
+export const fetchQuestions = async (amount: string, token: string) => {
+  try {    
+    const res = await axios(`${process.env.OPEN_TRIVIA_URL}/api.php?amount=${amount}&category=20&token=${token}`);   
     const { results } = res.data;
     return results;
   } catch (error) {
     throw error;
   }
 };
-
-export default {
-  createSession,
-  resumeSession,
-}

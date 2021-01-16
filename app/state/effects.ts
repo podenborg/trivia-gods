@@ -5,7 +5,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export const api = {  
   fetchSessionData: async (existingToken: string|undefined): Promise<{questions: IQuestion[], token: string}> => {
-    try {      
+    try {
+      debugger;
       const res = await axios(`${API_URL}/review-session?amount=${AMOUNT}${existingToken ? `&token=${existingToken}` : ""}`);      
       const { questions, token } = res.data;
       return { questions, token };

@@ -3,11 +3,11 @@ import { Request, Response, NextFunction } from "express";
 
 // const { createSession, resumeSession } = questionsService;
 
-const saveQuestions = async (req: Request, res: Response, next: NextFunction) => {    
+export const saveQuestions = async (req: Request, res: Response, next: NextFunction) => {    
   // const amount = req.query.amount as string;
   // const token = req.query.token as string;
   try {
-    const questions = req.body.questions as any[];
+    const { questions, token } = req.body;
     console.log("QUESTIONS FROM APP:", questions);
     // if (!token) {
     //   const [questions, token] = await createSession(amount);      
@@ -21,7 +21,3 @@ const saveQuestions = async (req: Request, res: Response, next: NextFunction) =>
     res.status(400).send(error.message);
   }
 };
-
-export default {
-  saveQuestions,
-}

@@ -10,13 +10,12 @@ export type Question = {
   times_correct?: number,
   times_incorrect?: number,
   last_guess_correct?: boolean,
-}
-
-export type Questions = Question[];
+  session_id: string,
+};
 
 export type Answer = {
   id: string,
   answer: string,
   is_correct: boolean,
   question_id: string,
-}
+};

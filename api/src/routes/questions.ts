@@ -1,5 +1,5 @@
-import questions from "../controllers/questions";
 import express from "express";
+import { questions } from "../controllers";
 
 const router = express.Router();
 

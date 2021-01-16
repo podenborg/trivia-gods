@@ -32,6 +32,10 @@ app.use(notFoundHandler);
 
 app.listen(PORT, () => {
   console.log(`Listening on port: ${PORT}`)
-})
+});
+
+process.on('uncaughtException', (error) => {
+  console.log(error);
+}); 
 
 module.exports = app;

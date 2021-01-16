@@ -7,11 +7,13 @@ export const setSessionToken: Action<string> = ({ state }, value) => {
 };
 
 export const initializeSession: AsyncAction = async ({ state, actions, effects }) => {
-  try {
+  try {    
     let sessionId, sessionToken;
     state.questions.isLoading = true;
 
     const session = await effects.storage.retrieveData("session");
+    console.log("SESSION", session);
+    console.log("SESSION TOKEN", sessionToken);
     if (session !== null) {
       sessionId = session.sessionId;
       sessionToken = session.sessionToken;
@@ -50,10 +52,10 @@ export const saveSessionData: AsyncAction = async ({ state, effects }) => {
 
 export const deleteSession: AsyncAction = async ({ state, effects }) => {
   try {
-    if (!state.session.id) {
-      console.log("No session to delete.");
-      return;
-    }
+    // if (!state.session.id && !state.session.token) {
+    //   console.log("No session to delete.");
+    //   return;
+    // }
     const oldSessionId = state.session.id;
     state.session.isLoading = true;
     state.session.id = "";

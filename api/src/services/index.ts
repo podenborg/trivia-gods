@@ -1,1 +1,2 @@
-export * as QuestionsService from "./questions";
+export * as questionsService from "./questions";
+export * as sessionsService from "./sessions";
