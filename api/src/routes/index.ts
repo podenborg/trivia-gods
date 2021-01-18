@@ -1,39 +1,65 @@
+import express, { Request, Response } from "express";
+import { questionsDb } from "../db";
 import { Question } from "../types";
-import express, { Request, Response, NextFunction } from "express";
 const router = express.Router();
-// import db, { sql } from "../db/index";
 
 /* GET home page. */
-router.get('/', function(req: Request, res: Response, next: NextFunction) {
+router.get('/', function(req: Request, res: Response) {
   res.send("Hello from Express and TypeScript!");
 });
 
-import { questionsDb } from "../db";
-
-// router.get('/test', async (req: Request, res: Response, next: NextFunction) => {
-//   try {
-//     const answers = [
-//       {id: '001', answer: "Zeus", is_correct: false, question_id: "001"},
-//       {id: '002', answer: "Haydes", is_correct: false, question_id: "001"},
-//       {id: '003', answer: "Jupiter", is_correct: true, question_id: "001"},  
-//     ];
-//     const result = await questionsDb.storeAnswers(answers);
-//     console.log("test result:", result);
-//     res.status(200).json(result);
-//   } catch (error) {
-//     console.log(error.message);
-//   }
-// });
-
-router.get('/test', async (req: Request, res: Response, next: NextFunction) => {
+router.get('/test', async (req: Request, res: Response) => {
   try {
-    const session_id = "session-001";
-    const questions: Question[] = [
-      {id: '001', category: "Mythology", type: "multiple", difficulty: "easy", question: "What's my name?", user_answer: "Pat", correct_answer: "Pat", incorrect_answers: ["Rob", "Collin", "Juan"], session_id },
-      {id: '002', category: "Mythology", type: "multiple", difficulty: "medium", question: "What's your name?", user_answer: "Pat", correct_answer: "Rob", incorrect_answers: ["Rob", "Collin", "Juan"], session_id },      
+    const questions = [
+      {
+        id: "001",
+        type: "multiple",
+        category: "Mythology",
+        difficulty: "easy",
+        question: "How old are you?",
+        user_answer: "27",
+        correct_answer: "27",
+        session_id: "e3wSCsWRGz",
+        incorrect_answers: [
+          "25",
+          "26",
+          "24"
+        ],
+      },
+      {
+        id: "002",
+        type: "multiple",
+        category: "Mythology",
+        difficulty: "medium",
+        question: "What's your name?",
+        user_answer: "Dan",
+        correct_answer: "Patrick",
+        session_id: "e3wSCsWRGz",
+        incorrect_answers: [
+          "Dan",
+          "Mark",
+          "Caleb"
+        ],
+      },
+      {
+        id: "003",
+        type: "multiple",
+        category: "Mythology",
+        difficulty: "hard",
+        question: "Where do you live?",
+        user_answer: "Austin",
+        correct_answer: "Austin",
+        session_id: "e3wSCsWRGz",
+        incorrect_answers: [
+          "Dallas",
+          "El Paso",
+          "Houston"
+        ],
+      },
     ];
-    const result = await questionsDb.storeQuestions(questions);    
-    console.log("test result:", result);
+
+    const result = await questionsDb.storeQuestions(questions);
+    console.log("RESULT", result);
     res.status(200).json(result);
   } catch (error) {
     console.log(error.message);

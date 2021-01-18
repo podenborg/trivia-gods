@@ -1,26 +1,7 @@
 import he from "he";
 import { nanoid } from "nanoid/non-secure";
 import { Question, Answer } from "../types";
-// import db, { sql } from "./index";
-import pool from "./index";
-
-// const nestQuery = (query: string) => {
-//   return sql`
-//     coalesce(
-//       (
-//         SELECT array_to_json(array_agg(row_to_json(x)))
-//         FROM (${query}) x
-//       ),
-//       '[]'
-//     )
-//   `;
-// };
-
-// const nestQuerySingle = (query: string) => {
-//   return sql`
-//     (SELECT row_to_json(x) FROM (${query}) x)
-//   `;
-// };
+import pool, { nestQuery } from "./index";
 
 export const storeQuestions = async (questions: Question[]) => {
   try {
@@ -28,19 +9,25 @@ export const storeQuestions = async (questions: Question[]) => {
     questions.forEach((q, index) => {
       const { id, type, category, difficulty, question, user_answer, correct_answer, session_id } = q;
       const isCorrect = user_answer === correct_answer;
-      values += `('${id}', '${type}', '${category}', '${difficulty}', '${he.encode(question)}', ${isCorrect}, 1, ${isCorrect ? 1 : 0}, '${session_id}')`;
+      values += `('${id}', '${type}', '${category}', '${difficulty}', '${he.escape(question)}', ${isCorrect}, 1, ${isCorrect ? 1 : 0}, '${session_id}')`;
       if (index < questions.length - 1) values += ", ";
     });
-
-    console.log("QUESTIONS VALUES", values);
 
     const query = `
       INSERT INTO questions (id, type, category, difficulty, question, last_answer_correct, times_answered, times_correct, session_id)
       VALUES ${values}
-      ON CONFLICT (id) DO NOTHING;      
+      ON CONFLICT (id) 
+      DO UPDATE 
+      SET        
+        last_answer_correct = EXCLUDED.last_answer_correct,
+        times_answered = questions.times_answered + 1,
+        times_correct = 
+          CASE 
+            WHEN (EXCLUDED.last_answer_correct = true) THEN (questions.times_correct + 1)
+            ELSE (questions.times_correct)
+          END
+      ;
     `;
-
-    console.log("QUESTIONS QUERY", query);
     
     const res = await pool.query(query); 
     return res;
@@ -57,7 +44,26 @@ export const retrieveIncorrectQuestions = async () => {
         type,
         category,
         difficulty,
-        question        
+        question,
+        (
+          SELECT answer 
+          FROM answers 
+          WHERE is_correct = true AND question_id = questions.id
+          LIMIT 1
+        ) AS correct_answer,
+        (
+          coalesce(
+            (
+              SELECT array_to_json(array_agg(row_to_json(row))) FROM (
+                SELECT answer 
+                FROM answers
+                WHERE question_id = questions.id
+                  AND is_correct IS false
+              ) row
+            ),            
+            '[]'
+          )
+        ) AS incorrect_answers
       FROM questions
       WHERE last_answer_correct = false
       ORDER BY 
@@ -68,8 +74,14 @@ export const retrieveIncorrectQuestions = async () => {
       ;
     `;
 
-    const res = await pool.query(query); 
-    return res;
+    const res = await pool.query(query);
+    if (res.rowCount === 0) return [];
+
+    const questions = res.rows.map(q => ({
+      ...q,
+      incorrect_answers: [ ...q.incorrect_answers.map((ia: { answer: string }) => ia.answer) ]
+    }));
+    return questions;
   } catch (error) {
     throw error;
   }
@@ -87,7 +99,7 @@ export const storeAnswers = async (answers: Answer[]) => {
     let query = `
       INSERT INTO answers (id, answer, is_correct, question_id)
       VALUES ${values}
-      ON CONFLICT (id) DO NOTHING;
+      ON CONFLICT ON CONSTRAINT unique_answer DO NOTHING;
     `;
   
     const res = await pool.query(query);
