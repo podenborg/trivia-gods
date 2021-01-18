@@ -9,33 +9,54 @@ export const handleGetSession = async (req: Request, res: Response) => {
   try {
     const amount = req.query.amount as string;
     const token = req.query.token as string;
+    const sessionId = req.query.sessionId as string;
 
     if (!token) {
-      const { questions, token } = await createSession(amount);      
-      res.status(200).json({ questions, token });         
+      const { questions, token } = await createSession(Number(amount));
+      res.status(200).json({ 
+        statusCode: 200,
+        status: "success",
+        data: {
+          questions: questions, 
+          token: token
+        }
+      });
     } else {
-      const questions = await resumeSession(amount, token);
-      res.status(200).json({ questions, token });
+      const questions = await resumeSession(Number(amount), token, sessionId);
+      res.status(200).json({ 
+        statusCode: 200,
+        status: "success",
+        data: {
+          questions: questions, 
+          token: token
+        }
+      });
     }
-  } catch (error) {
-    res.status(400).send(error.message);
+  } catch (error) {    
+    res.status(400).json({
+      status: "error",
+      statusCode: 400,
+      message: error.message
+    });
   }
 };
 
 export const handleSaveSession = async (req: Request, res: Response) => {
   try {
-    const { sessionId, questions } = req.body;
-
-    console.log("SESSION ID", sessionId);
-    console.log("QUESTIONS", questions);
-
+    const { sessionId, questions } = req.body;  
     const questionsWithSessionId = questions.map((q: Question) => ({ ...q, session_id: sessionId }));
 
-    console.log("QUESTIONS WITH ID", questionsWithSessionId);
-
     await saveQuestions(questionsWithSessionId);
-    res.status(200).json({ statusCode: 200, status: "success", message: "Successfully stored session data." });
+    res.status(200).json({ 
+      statusCode: 200, 
+      status: "success",
+      message: "Successfully stored session data." 
+    });
   } catch (error) {
-    res.status(400).send(error.message);
+    res.status(400).json({
+      status: "error",
+      statusCode: 400,
+      message: error.message
+    });
   }
 };

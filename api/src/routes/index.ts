@@ -1,6 +1,5 @@
 import express, { Request, Response } from "express";
 import { questionsDb } from "../db";
-import { Question } from "../types";
 const router = express.Router();
 
 /* GET home page. */

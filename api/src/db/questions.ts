@@ -9,7 +9,7 @@ export const storeQuestions = async (questions: Question[]) => {
     questions.forEach((q, index) => {
       const { id, type, category, difficulty, question, user_answer, correct_answer, session_id } = q;
       const isCorrect = user_answer === correct_answer;
-      values += `('${id}', '${type}', '${category}', '${difficulty}', '${he.escape(question)}', ${isCorrect}, 1, ${isCorrect ? 1 : 0}, '${session_id}')`;
+      values += `('${id}', '${type}', '${category}', '${difficulty}', '${question}', ${isCorrect}, 1, ${isCorrect ? 1 : 0}, '${session_id}')`;
       if (index < questions.length - 1) values += ", ";
     });
 
@@ -87,12 +87,78 @@ export const retrieveIncorrectQuestions = async () => {
   }
 };
 
+export const retrieveCorrectQuestions = async (amount: number|undefined) => {
+  try {
+    const query = `
+      SELECT 
+        id,
+        type,
+        category,
+        difficulty,
+        question,
+        (
+          SELECT answer 
+          FROM answers 
+          WHERE is_correct = true AND question_id = questions.id
+          LIMIT 1
+        ) AS correct_answer,
+        (
+          coalesce(
+            (
+              SELECT array_to_json(array_agg(row_to_json(row))) FROM (
+                SELECT answer 
+                FROM answers
+                WHERE question_id = questions.id
+                  AND is_correct IS false
+              ) row
+            ),            
+            '[]'
+          )
+        ) AS incorrect_answers
+      FROM questions
+      WHERE last_answer_correct = true
+      ORDER BY 
+        times_correct DESC,
+        difficulty = 'easy',
+        difficulty = 'medium',
+        difficulty = 'hard'
+      ${amount && `LIMIT ${amount}`}
+      ;
+    `;
+
+    const res = await pool.query(query);
+    if (res.rowCount === 0) return [];
+
+    const questions = res.rows.map(q => ({
+      ...q,
+      incorrect_answers: [ ...q.incorrect_answers.map((ia: { answer: string }) => ia.answer) ]
+    }));
+    return questions;
+  } catch (error) {
+    throw error;
+  }
+};
+
+export const retrieveQuestionsCount = async (sessionId: string) => {
+  try {
+    let query = `
+      SELECT * FROM questions
+      WHERE session_id = '${sessionId}';
+    `;
+  
+    const res = await pool.query(query);
+    return res.rowCount;
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const storeAnswers = async (answers: Answer[]) => {
   try {
     let values = "";
     answers.forEach((ans, index) => {
       const { id, answer, is_correct, question_id } = ans;
-      values += `('${id}', '${he.encode(answer)}', ${is_correct}, '${question_id}')`;
+      values += `('${id}', '${answer}', ${is_correct}, '${question_id}')`;
       if (index < answers.length - 1) values += ", ";
     });
 
@@ -123,9 +189,7 @@ export const extractAnswersFromQuestions = (questions: Question[]) => {
         question_id: question.id,
       });
     });
-  });  
-
-  console.log("ALL ANSWERS", allAnswers);
+  });
 
   return allAnswers;
 };
