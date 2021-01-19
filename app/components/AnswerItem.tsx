@@ -1,3 +1,4 @@
+import he from "he";
 import React from "react";
 import tailwind from "tailwind-rn";
 import { useState, useActions } from "../state";
@@ -33,8 +34,6 @@ export default function AnswerItem({
     }
   };
 
-  console.log("currentQuestion", currentQuestion);
-
   const handleAnswerQuestion = () => {
     if (currentQuestion.was_answered) return;
     setQuestion({
@@ -49,7 +48,7 @@ export default function AnswerItem({
   return (
     <TouchableOpacity onPress={handleAnswerQuestion} style={tailwind(`w-full min-w-full mt-3 px-4 py-5 rounded-md ${getAnswerStyles()}`)}>
       <Text style={tailwind("text-base font-semibold text-gray-600")}>
-        {answer}
+        {he.decode(answer)}
       </Text>
     </TouchableOpacity>
   );

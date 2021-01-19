@@ -1,8 +1,6 @@
 import React from "react";
 import tailwind from "tailwind-rn"
-import { View } from "react-native";
-
-console.log(tailwind);
+import { View, SafeAreaView } from "react-native";
 
 interface LayoutProps {
   children: React.ReactNode
@@ -10,10 +8,10 @@ interface LayoutProps {
 
 export default function Layout({ children }: LayoutProps) {
   return (
-    <View style={tailwind("h-full w-full bg-gray-100 flex items-center")}>
+    <SafeAreaView style={tailwind("h-full w-full bg-gray-100 flex items-center")}>
       <View style={tailwind("h-full w-full max-w-sm")}>
         {children}
       </View>      
-    </View>
+    </SafeAreaView>
   )
 }

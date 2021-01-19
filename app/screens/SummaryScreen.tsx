@@ -2,20 +2,23 @@ import he from "he";
 import React from "react";
 import tailwind from "tailwind-rn";
 import { Screens } from "../enums";
-import { IQuestion } from "../types";
 import { useState, useActions } from "../state";
 import { View, Text, FlatList } from "react-native";
+import { IQuestion, RootParamList } from "../types";
+import { StackScreenProps } from "@react-navigation/stack";
 
 import Layout from "../components/Layout";
 import Loader from "../components/Loader";
 import Button from "../components/Button";
+
+export type SummaryScreenProps = StackScreenProps<RootParamList, Screens.SummaryScreen>
 
 interface RenderItemProps {
   item: IQuestion,
   index: number
 }
 
-export default function SummaryScreen({ navigation }) {
+export default function SummaryScreen({ navigation }: SummaryScreenProps) {
   const { questions, session } = useState();
   const { dataList, totalCorrect, totalQuestions } = questions;
   const { isLoading, isError, error } = session;
@@ -43,24 +46,39 @@ export default function SummaryScreen({ navigation }) {
 
   return (
     <Layout>
-      <View style={tailwind("mt-6")}>
-        <Text style={tailwind(`text-center text-lg text-gray-600 font-semibold`)}>
-          You got {totalCorrect} out of {totalQuestions} questions correct!
-        </Text>
-
-        <FlatList 
-          data={dataList}
-          renderItem={renderItem}
-          style={tailwind("mt-3 w-full")}
-          keyExtractor={item => item.id}
-        />
-      </View>      
-
-      <View style={tailwind("mt-5")}>
-        <Button onPress={() => navigation.navigate(Screens.HomeScreen)}>
-          Continue
-        </Button>
-      </View>
+      <FlatList 
+        data={dataList}
+        renderItem={renderItem}
+        style={tailwind("mt-3 w-full px-4")}
+        keyExtractor={item => item.id}
+        ListHeaderComponent={<SummaryHeader/>}
+        ListFooterComponent={<SummaryFooter navigation={navigation}/>}
+      />
     </Layout>
   )
+}
+
+function SummaryHeader() {
+  const { questions } = useState();
+  const { totalCorrect, totalQuestions } = questions;
+
+  return (
+    <View style={tailwind("mt-4 flex justify-center")}>
+      <Text style={tailwind(`text-center text-lg text-gray-600 font-semibold`)}>
+        You got {totalCorrect} out of {totalQuestions} questions correct!
+      </Text>
+    </View>
+  );
+}
+
+interface SummaryFooterProps extends Pick<SummaryScreenProps, "navigation"> {}
+
+function SummaryFooter({ navigation }: SummaryFooterProps) {  
+  return (
+    <View style={tailwind("mt-5 px-4 h-24 flex justify-center border-t-2 border-solid border-gray-200")}>
+      <Button onPress={() => navigation.navigate(Screens.HomeScreen)}>
+        Continue
+      </Button>
+    </View>
+  );
 }

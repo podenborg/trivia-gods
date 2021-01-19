@@ -12,14 +12,13 @@ export const initializeSession: AsyncAction = async ({ state, actions, effects }
     state.questions.isLoading = true;
 
     const session = await effects.storage.retrieveData("session");
-    console.log("SESSION", session);
-    console.log("SESSION TOKEN", sessionToken);
+    
     if (session !== null) {
       sessionId = session.sessionId;
       sessionToken = session.sessionToken;
     }
     
-    const { questions, token } = await effects.api.fetchSessionData(sessionToken);    
+    const { questions, token } = await effects.api.fetchSessionData(sessionToken, sessionId);    
     actions.setQuestions(questions);
     actions.setSessionToken(token);
 
@@ -40,8 +39,7 @@ export const initializeSession: AsyncAction = async ({ state, actions, effects }
 export const saveSessionData: AsyncAction = async ({ state, effects }) => {
   try {
     state.session.isLoading = true;
-    const result = await effects.api.postSessionData(state.session.id, state.questions.dataList);
-    console.log("result", result);
+    const result = await effects.api.postSessionData(state.session.id, state.questions.dataList);    
   } catch (error) {
     state.session.error = error;
     state.session.isError = true;
@@ -51,11 +49,7 @@ export const saveSessionData: AsyncAction = async ({ state, effects }) => {
 };
 
 export const deleteSession: AsyncAction = async ({ state, effects }) => {
-  try {
-    // if (!state.session.id && !state.session.token) {
-    //   console.log("No session to delete.");
-    //   return;
-    // }
+  try {    
     const oldSessionId = state.session.id;
     state.session.isLoading = true;
     state.session.id = "";

@@ -19,10 +19,7 @@ export default function HomeScreen({ navigation, route }: PracticeScreenProps) {
   const { questions } = useState();
   const { questionIndex } = route.params;  
   const { isLoading, isError, error, dataList, currentQuestion } = questions;
-  const { initializeSession, setCurrentQuestionIndex } = useActions(); 
-
-  console.log("dataList", dataList);
-  console.log("currentQuestion", currentQuestion);
+  const { initializeSession, setCurrentQuestionIndex } = useActions();
 
   const handleNavigate = () => {
     return questionIndex < dataList.length - 1
@@ -54,7 +51,7 @@ export default function HomeScreen({ navigation, route }: PracticeScreenProps) {
         </View>
 
         {currentQuestion.was_answered && 
-          <View style={tailwind("mt-3 pb-8 h-40 w-full px-4 bg-white")}>
+          <View style={tailwind("mt-3 pb-8 h-40 w-full px-4 bg-white flex justify-center border-t-2 border-solid border-gray-200")}>
             <Text style={tailwind("mt-4 mb-3 text-lg text-gray-700 font-semibold")}>
               {currentQuestion.correct_answer === currentQuestion.user_answer
                 ? "You got it right! 🎉"
