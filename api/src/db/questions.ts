@@ -1,7 +1,6 @@
-import he from "he";
+import pool from "./index";
 import { nanoid } from "nanoid/non-secure";
 import { Question, Answer } from "../types";
-import pool, { nestQuery } from "./index";
 
 export const storeQuestions = async (questions: Question[]) => {
   try {

@@ -1,11 +1,11 @@
 import React from "react";
 import tailwind from "tailwind-rn";
 import { Screens } from "../enums";
+import { useActions } from "../state";
 import { RootParamList } from "../types";
+import { Text, View } from "react-native";
 import { StatusBar } from "expo-status-bar";
-import { useState, useActions } from "../state";
 import { StackScreenProps } from "@react-navigation/stack";
-import { TouchableOpacity, Text, View, ImageBackground, StyleSheet } from "react-native";
 
 import Layout from "../components/Layout";
 import Button from "../components/Button";
@@ -13,12 +13,11 @@ import Button from "../components/Button";
 type HomeScreenProps = StackScreenProps<RootParamList, Screens.HomeScreen>
 
 export default function HomeScreen({ navigation, route }: HomeScreenProps) {
-  const { session: { id: sessionId }} = useState();
   const { deleteSession } = useActions();
 
   return (
     <Layout>      
-      <View style={tailwind("w-full px-4")}>        
+      <View style={tailwind("w-full px-4")}>         
         <View style={tailwind("mt-6 py-6 px-6 bg-white rounded-md")}>
           <View style={tailwind("mb-6")}>
             <Text style={tailwind("text-gray-600 font-bold text-4xl")}>
@@ -34,11 +33,12 @@ export default function HomeScreen({ navigation, route }: HomeScreenProps) {
           </Button>
         </View>
 
+        {process.env.NODE_ENV === "development" && 
         <View style={tailwind("mt-8 px-6")}>
           <Button color="yellow" onPress={async () => {await deleteSession();}}>
             Reset Session
           </Button>
-        </View>
+        </View>}
 
         <StatusBar style="auto" />           
       </View>
